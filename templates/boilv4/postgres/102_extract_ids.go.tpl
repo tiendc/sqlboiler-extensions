@@ -4,6 +4,11 @@
 
 {{range $column := .Table.Columns -}}
 {{if eq $column.Name "id"}}
+// GetID get ID from model object
+func (o *{{$alias.UpSingular}}) GetID() {{$column.Type}} {
+    return o.ID
+}
+
 // GetIDs extract IDs from model objects
 func (s {{$alias.UpSingular}}Slice) GetIDs() []{{$column.Type}} {
     result := make([]{{$column.Type}}, len(s))

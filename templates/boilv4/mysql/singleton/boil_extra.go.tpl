@@ -1,5 +1,7 @@
 
 import (
+	"unsafe"
+	
 	"github.com/volatiletech/sqlboiler/v4/queries"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
@@ -52,4 +54,17 @@ func SplitInChunks[T any](slice []T) [][]T {
 
 func SplitInChunksBySize[T any](slice []T, chunkSize int) [][]T {
     return chunkSlice(slice, chunkSize)
+}
+
+func unsafeGetString(b []byte) string {
+	return *(*string)(unsafe.Pointer(&b))
+}
+
+func unsafeGetBytes(s string) []byte {
+	return *(*[]byte)(unsafe.Pointer(
+		&struct {
+			string
+			Cap int
+		}{s, len(s)},
+	))
 }
