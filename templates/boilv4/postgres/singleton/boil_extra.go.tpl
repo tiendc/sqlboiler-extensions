@@ -59,12 +59,3 @@ func SplitInChunksBySize[T any](slice []T, chunkSize int) [][]T {
 func unsafeGetString(b []byte) string {
 	return *(*string)(unsafe.Pointer(&b))
 }
-
-func unsafeGetBytes(s string) []byte {
-	return *(*[]byte)(unsafe.Pointer(
-		&struct {
-			string
-			Cap int
-		}{s, len(s)},
-	))
-}
