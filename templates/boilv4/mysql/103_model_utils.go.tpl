@@ -41,6 +41,9 @@ func (s {{$alias.UpSingular}}Slice) FindItemByID(id {{$column.Type}}) *{{$alias.
 // FindMissingItemIDs find all item IDs that are not in the list
 // NOTE: the input ID slice should contain unique values
 func (s {{$alias.UpSingular}}Slice) FindMissingItemIDs(expectedIDs []{{$column.Type}}) []{{$column.Type}} {
+    if len(s) == 0 {
+        return expectedIDs
+    }
     result := []{{$column.Type}}{}
     mapChk := s.ToIDMap()
     for _, id := range expectedIDs {
@@ -100,6 +103,9 @@ func (s {{$alias.UpSingular}}Slice) FindItemByID(id {{$column.Type}}) *{{$alias.
 // FindMissingItemIDs find all item IDs that are not in the list
 // NOTE: the input ID slice should contain unique values
 func (s {{$alias.UpSingular}}Slice) FindMissingItemIDs(expectedIDs []{{$column.Type}}) []{{$column.Type}} {
+    if len(s) == 0 {
+        return expectedIDs
+    }
     result := []{{$column.Type}}{}
     mapChk := s.ToIDMap()
     for _, id := range expectedIDs {
