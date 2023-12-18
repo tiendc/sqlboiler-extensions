@@ -8,7 +8,7 @@
 
 Additional functionalities:
   - modelSlice.InsertAll
-  - modelSlice.InsertAllByPage (use this when len(modelSlice) is bigger than RDBMS limitation, commonly 65536 items)
+  - modelSlice.InsertAllByPage (use this when len(modelSlice) is bigger than RDBMS limitation, commonly 65535 parameters)
   - modelSlice.UpsertAll
   - modelSlice.UpsertAllByPage
   - modelSlice.UpdateAllByPage
