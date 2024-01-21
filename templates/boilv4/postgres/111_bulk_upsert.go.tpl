@@ -39,8 +39,8 @@ func (o {{$alias.UpSingular}}Slice) UpsertAll(ctx context.Context, exec boil.Con
 
 	columns := "DEFAULT VALUES"
 	if len(insert) != 0 {
-		columns = fmt.Sprintf("(\"%s\") VALUES %s",
-			strings.Join(insert, "\",\""),
+		columns = fmt.Sprintf("(%s) VALUES %s",
+			strings.Join(insert, ", "),
 			strmangle.Placeholders(dialect.UseIndexPlaceholders, len(insert)*len(o), 1, len(insert)),
 		)
 	}
