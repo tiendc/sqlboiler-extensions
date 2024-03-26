@@ -7,23 +7,25 @@
 [SQLBoiler](https://github.com/volatiletech/sqlboiler) generated models don't come with supports for bulk operations such as bulk insert, upsert, delete and they don't provide any mechanism to overcome the RDBMS limitations such as max number of parameters in a query or statement.
 
 Additional functionalities:
-  - modelSlice.InsertAll
-  - modelSlice.InsertAllByPage (use this when len(modelSlice) is bigger than RDBMS limitation, commonly 65535 parameters)
-  - modelSlice.UpsertAll
-  - modelSlice.UpsertAllByPage
-  - modelSlice.UpdateAllByPage
-  - modelSlice.DeleteAll
-  - modelSlice.DeleteAllByPage
-  - modelSlice.GetLoaded<<FK-ref-type>> (collect all objects from model.R.<<FK-ref-type>>)
-  - modelSlice.Load<<FK-ref-type>>ByPage (perform eager loading reference type by page to overcome RDBMS limitation)
+  - modelSlice.`InsertAll`
+  - modelSlice.`InsertAllByPage` (use this when len(modelSlice) is bigger than RDBMS limitation, commonly 65535 parameters)
+  - modelSlice.`InsertIgnoreAll`
+  - modelSlice.`InsertIgnoreAllByPage`
+  - modelSlice.`UpsertAll`
+  - modelSlice.`UpsertAllByPage`
+  - modelSlice.`UpdateAllByPage`
+  - modelSlice.`DeleteAll`
+  - modelSlice.`DeleteAllByPage`
+  - modelSlice.`GetLoaded<FK-ref-type>` (collect all objects from model.R.`<FK-ref-type>`)
+  - modelSlice.`Load<FK-ref-type>ByPage` (perform eager loading reference type by page to overcome RDBMS limitation)
 
 Additional utility functions:
-  - model.GetID() (get ID from the object)
-  - modelSlice.GetIDs() (get all IDs from the list)
-  - modelSlice.ToIDMap() (convert the list to a map with ID as keys and model object as values)
-  - modelSlice.ToUniqueItems() (construct a slice of unique model objects from the list)
-  - modelSlice.FindItemByID(id) (find item by ID from the list)
-  - modelSlice.FindMissingItemIDs(checkIDs) (find missing item IDs from the list)
+  - model.`GetID()` (get ID from the object)
+  - modelSlice.`GetIDs()` (get all IDs from the list)
+  - modelSlice.`ToIDMap()` (convert the list to a map with ID as keys and model object as values)
+  - modelSlice.`ToUniqueItems()` (construct a slice of unique model objects from the list)
+  - modelSlice.`FindItemByID(id)` (find item by ID from the list)
+  - modelSlice.`FindMissingItemIDs(checkIDs)` (find missing item IDs from the list)
 
 Supported RDBMS:
   - MySQL (well-tested)
