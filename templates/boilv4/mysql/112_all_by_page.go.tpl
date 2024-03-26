@@ -122,6 +122,44 @@ func (s {{$alias.UpSingular}}Slice) InsertAllByPage(ctx context.Context, exec bo
     return rowsAffected, nil
 }
 
+// InsertIgnoreAllByPage insert all {{$alias.UpSingular}} records from the slice.
+// This function inserts data by pages to avoid exceeding Postgres limitation (max parameters: 65535)
+func (s {{$alias.UpSingular}}Slice) InsertIgnoreAllByPage(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns, limits ...int) (int64, error) {
+    length := len(s)
+    if length == 0 {
+        return 0, nil
+    }
+
+    // max number of parameters = 65535
+    chunkSize := MaxPageSize / reflect.ValueOf(&{{$alias.UpSingular}}Columns).Elem().NumField()
+    if len(limits) > 0 && limits[0] > 0 && limits[0] < chunkSize {
+        chunkSize = limits[0]
+    }
+    if length <= chunkSize {
+        return s.InsertIgnoreAll(ctx, exec, columns)
+    }
+
+    rowsAffected := int64(0)
+    start := 0
+    for {
+        end := start + chunkSize
+        if end > length {
+            end = length
+        }
+        rows, err := s[start:end].InsertIgnoreAll(ctx, exec, columns)
+        if err != nil {
+            return rowsAffected, err
+        }
+
+        rowsAffected += rows
+        start = end
+        if start >= length {
+            break
+        }
+    }
+    return rowsAffected, nil
+}
+
 // UpsertAllByPage upsert all {{$alias.UpSingular}} records from the slice.
 // This function upserts data by pages to avoid exceeding Mysql limitation (max placeholders: 65535)
 // Mysql Error 1390: Prepared statement contains too many placeholders.

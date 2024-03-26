@@ -5,9 +5,30 @@
 {{- $schemaTable := .Table.Name | .SchemaTable}}
 
 // InsertAll inserts all rows with the specified column values, using an executor.
+// IMPORTANT: this will calculate the widest columns from all items in the slice, be careful if you want to use default column values
 func (o {{$alias.UpSingular}}Slice) InsertAll({{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}, columns boil.Columns) {{if .NoRowsAffected}}error{{else}}(int64, error){{end -}} {
 	if len(o) == 0 {
 		return 0, nil
+	}
+
+	// Calculate the widest columns from all rows need to insert
+	wlCols := make(map[string]struct{}, 10)
+	for _, row := range o {
+		wl, _ := columns.InsertColumnSet(
+			{{$alias.DownSingular}}AllColumns,
+			{{$alias.DownSingular}}ColumnsWithDefault,
+			{{$alias.DownSingular}}ColumnsWithoutDefault,
+			queries.NonZeroDefaultSet({{$alias.DownSingular}}ColumnsWithDefault, row),
+		)
+		for _, col := range wl {
+			wlCols[col] = struct{}{}
+		}
+	}
+	wl := make([]string, 0, len(wlCols))
+	for _, col := range {{$alias.DownSingular}}AllColumns {
+		if _, ok := wlCols[col]; ok {
+			wl = append(wl, col)
+		}
 	}
 
 	var sql string
@@ -56,12 +77,6 @@ func (o {{$alias.UpSingular}}Slice) InsertAll({{if .NoContext}}exec boil.Executo
 		}
 		{{- end}}
 
-		wl, _ := columns.InsertColumnSet(
-			{{$alias.DownSingular}}AllColumns,
-			{{$alias.DownSingular}}ColumnsWithDefault,
-			{{$alias.DownSingular}}ColumnsWithoutDefault,
-			queries.NonZeroDefaultSet({{$alias.DownSingular}}ColumnsWithDefault, row),
-		)
 		if i == 0 {
 			sql = "INSERT INTO {{$schemaTable}} " + "({{.LQ}}" + strings.Join(wl, "{{.RQ}},{{.LQ}}") + "{{.RQ}})" + " VALUES "
 		}
@@ -118,6 +133,12 @@ func (o {{$alias.UpSingular}}Slice) InsertAll({{if .NoContext}}exec boil.Executo
 	{{- end}}
 
 	return {{if not .NoRowsAffected}}rowsAff, {{end -}} nil
+}
+
+// InsertIgnoreAll inserts all rows with ignoring the existing ones having the same primary key values.
+// IMPORTANT: this will calculate the widest columns from all items in the slice, be careful if you want to use default column values
+func (o {{$alias.UpSingular}}Slice) InsertIgnoreAll({{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}, columns boil.Columns) {{if .NoRowsAffected}}error{{else}}(int64, error){{end -}} {
+	return o.UpsertAll({{if .NoContext}}exec{{else}}ctx, exec{{end}}, boil.None(), columns)
 }
 
 {{- end -}}

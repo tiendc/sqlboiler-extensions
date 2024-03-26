@@ -6,19 +6,33 @@
 
 // UpsertAll inserts or updates all rows
 // Currently it doesn't support "NoContext" and "NoRowsAffected"
+// IMPORTANT: this will calculate the widest columns from all items in the slice, be careful if you want to use default column values
+// IMPORTANT: if the table has `id` column of auto-increment type, this may not work as expected
 func (o {{$alias.UpSingular}}Slice) UpsertAll(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
 
-	nzDefaults := queries.NonZeroDefaultSet({{$alias.DownSingular}}ColumnsWithDefault, o[0])
+	// Calculate the widest columns from all rows need to upsert
+	insertCols := make(map[string]struct{}, 10)
+	for _, row := range o {
+		insert, _ := insertColumns.InsertColumnSet(
+			{{$alias.DownSingular}}AllColumns,
+			{{$alias.DownSingular}}ColumnsWithDefault,
+			{{$alias.DownSingular}}ColumnsWithoutDefault,
+			queries.NonZeroDefaultSet({{$alias.DownSingular}}ColumnsWithDefault, row),
+		)
+		for _, col := range insert {
+			insertCols[col] = struct{}{}
+		}
+	}
+	insert := make([]string, 0, len(insertCols))
+	for _, col := range {{$alias.DownSingular}}AllColumns {
+		if _, ok := insertCols[col]; ok {
+			insert = append(insert, col)
+		}
+	}
 
-	insert, _ := insertColumns.InsertColumnSet(
-		{{$alias.DownSingular}}AllColumns,
-		{{$alias.DownSingular}}ColumnsWithDefault,
-		{{$alias.DownSingular}}ColumnsWithoutDefault,
-		nzDefaults,
-	)
 	update := updateColumns.UpdateColumnSet(
 		{{$alias.DownSingular}}AllColumns,
 		{{$alias.DownSingular}}PrimaryKeyColumns,
