@@ -28,6 +28,9 @@ func (o {{$alias.UpSingular}}Slice) UpsertAll(ctx context.Context, exec boil.Con
 		for _, col := range insert {
 			insertCols[col] = struct{}{}
 		}
+		if len(insertCols) == len({{$alias.DownSingular}}AllColumns) {
+			break
+		}
 	}
 	insert := make([]string, 0, len(insertCols))
 	for _, col := range {{$alias.DownSingular}}AllColumns {

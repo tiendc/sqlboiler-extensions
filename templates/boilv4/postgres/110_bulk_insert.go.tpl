@@ -23,6 +23,9 @@ func (o {{$alias.UpSingular}}Slice) InsertAll({{if .NoContext}}exec boil.Executo
         for _, col := range wl {
             wlCols[col] = struct{}{}
         }
+        if len(wlCols) == len({{$alias.DownSingular}}AllColumns) {
+            break
+        }
     }
     wl := make([]string, 0, len(wlCols))
     for _, col := range {{$alias.DownSingular}}AllColumns {
