@@ -8,24 +8,24 @@
 
 Additional functionalities:
   - modelSlice.`InsertAll`
-  - modelSlice.`InsertAllByPage` (use this when len(modelSlice) is bigger than RDBMS limitation, commonly 65535 parameters)
+  - modelSlice.`InsertAllByPage`: Use this when len(modelSlice) is bigger than RDBMS limitation, commonly 65535 parameters. If you need ACID, call this function within a transaction. Otherwise multiple calls will be made to the DB.
   - modelSlice.`InsertIgnoreAll`
-  - modelSlice.`InsertIgnoreAllByPage`
+  - modelSlice.`InsertIgnoreAllByPage`: If you need ACID, call this function within a transaction.
   - modelSlice.`UpsertAll`
-  - modelSlice.`UpsertAllByPage`
-  - modelSlice.`UpdateAllByPage`
+  - modelSlice.`UpsertAllByPage`:  If you need ACID, call this function within a transaction.
+  - modelSlice.`UpdateAllByPage`: If you need ACID, call this function within a transaction.
   - modelSlice.`DeleteAll`
-  - modelSlice.`DeleteAllByPage`
-  - modelSlice.`GetLoaded<FK-ref-type>` (collect all objects from model.R.`<FK-ref-type>`)
-  - modelSlice.`Load<FK-ref-type>ByPage` (perform eager loading reference type by page to overcome RDBMS limitation)
+  - modelSlice.`DeleteAllByPage`: If you need ACID, call this function within a transaction.
+  - modelSlice.`GetLoaded<fk-ref-type>`: Collect all objects from model.R.`<FK-ref-type>`
+  - modelSlice.`Load<fk-ref-type>ByPage`: Perform eager loading reference type by page to overcome RDBMS limitation
 
 Additional utility functions:
-  - model.`GetID()` (get ID from the object)
-  - modelSlice.`GetIDs()` (get all IDs from the list)
-  - modelSlice.`ToIDMap()` (convert the list to a map with ID as keys and model object as values)
-  - modelSlice.`ToUniqueItems()` (construct a slice of unique model objects from the list)
-  - modelSlice.`FindItemByID(id)` (find item by ID from the list)
-  - modelSlice.`FindMissingItemIDs(checkIDs)` (find missing item IDs from the list)
+  - model.`GetID()`: Get ID from the object.
+  - modelSlice.`GetIDs()`: Get all IDs from the list.
+  - modelSlice.`ToIDMap()`: Convert the list to a map with ID as keys and model object as values.
+  - modelSlice.`ToUniqueItems()`: Construct a slice of unique model objects from the list.
+  - modelSlice.`FindItemByID(id)`: Find item by ID from the list.
+  - modelSlice.`FindMissingItemIDs(checkIDs)`: Find missing item IDs from the list.
 
 Supported RDBMS:
   - MySQL (well-tested)
@@ -44,7 +44,3 @@ See the [demo](https://github.com/tiendc/sqlboiler-extensions-demo)
 
 - Dao Cong Tien ([tiendc](https://github.com/tiendc))
 - Takenaka Kazumasa ([ktakenaka](https://github.com/ktakenaka))
-
-## License
-
-- [MIT License](LICENSE)
