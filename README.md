@@ -12,7 +12,9 @@ Additional functionalities:
   - modelSlice.`InsertIgnoreAll`
   - modelSlice.`InsertIgnoreAllByPage`: If you need ACID, call this function within a transaction.
   - modelSlice.`UpsertAll`
-  - modelSlice.`UpsertAllByPage`:  If you need ACID, call this function within a transaction.
+  - modelSlice.`UpsertAllOnConflictColumns`: MySQL only. Workaround of [issues/328](https://github.com/volatiletech/sqlboiler/issues/328).
+  - modelSlice.`UpsertOnConflictColumns`: MySQL only. Workaround of [issues/328](https://github.com/volatiletech/sqlboiler/issues/328).
+  - modelSlice.`UpsertAllByPage`: If you need ACID, call this function within a transaction.
   - modelSlice.`UpdateAllByPage`: If you need ACID, call this function within a transaction.
   - modelSlice.`DeleteAll`
   - modelSlice.`DeleteAllByPage`: If you need ACID, call this function within a transaction.
