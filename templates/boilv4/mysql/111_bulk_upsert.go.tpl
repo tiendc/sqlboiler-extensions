@@ -4,20 +4,53 @@
 {{- $alias := .Aliases.Table .Table.Name -}}
 {{- $schemaTable := .Table.Name | .SchemaTable}}
 
-// UpsertAll inserts or updates all rows
-// Currently it doesn't support "NoContext" and "NoRowsAffected"
-// IMPORTANT: this will calculate the widest columns from all items in the slice, be careful if you want to use default column values
+// UpsertAll inserts or updates all rows.
+// Currently it doesn't support "NoContext" and "NoRowsAffected".
+// IMPORTANT: this will calculate the widest columns from all items in the slice, be careful if you want to use default column values.
+// IMPORTANT: any AUTO_INCREMENT column should be excluded from `updateColumns` and `insertColumns` including PK.
 func (o {{$alias.UpSingular}}Slice) UpsertAll(ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) (int64, error) {
+    return o.upsertAllOnConflictColumns(ctx, exec, nil, updateColumns, insertColumns)
+}
+
+// upsertAllOnConflictColumns upserts multiple rows with passing custom conflict columns to allow bypassing
+// single column conflict check (see bug https://github.com/volatiletech/sqlboiler/issues/328).
+// SQLBoiler only checks column conflict on single column only which is not correct as MySQL PK or UNIQUE index
+// can include multiple columns.
+// This function allows passing multiple conflict columns, but it cannot check whether they are correct or not.
+// So use it at your own risk.
+func (o {{$alias.UpSingular}}Slice) UpsertAllOnConflictColumns(ctx context.Context, exec boil.ContextExecutor, conflictColumns []string, updateColumns, insertColumns boil.Columns) (int64, error) {
+    return o.upsertAllOnConflictColumns(ctx, exec, conflictColumns, updateColumns, insertColumns)
+}
+
+func (o {{$alias.UpSingular}}Slice) upsertAllOnConflictColumns(ctx context.Context, exec boil.ContextExecutor, conflictColumns []string, updateColumns, insertColumns boil.Columns) (int64, error) {
     if len(o) == 0 {
         return 0, nil
+    }
+
+    checkNZUniques := len(conflictColumns) == 0
+    if len(conflictColumns) > 0 {
+        mapConflictColumns := make(map[string]struct{}, len(conflictColumns))
+        for _, col := range conflictColumns {
+            for _, existCol := range {{$alias.DownSingular}}AllColumns {
+                if col == existCol {
+                    mapConflictColumns[col] = struct{}{}
+                    break
+                }
+            }
+        }
+        if len(mapConflictColumns) <= 1 {
+            return 0, errors.New("custom conflict columns must be 2 columns or more")
+        }
     }
 
     // Calculate the widest columns from all rows need to upsert
     insertCols := make(map[string]struct{}, 10)
     for _, row := range o {
-        nzUniques := queries.NonZeroDefaultSet(mySQL{{$alias.UpSingular}}UniqueColumns, row)
-        if len(nzUniques) == 0 {
-            return 0, errors.New("cannot upsert with a table that cannot conflict on a unique column")
+        if checkNZUniques {
+                nzUniques := queries.NonZeroDefaultSet(mySQL{{$alias.UpSingular}}UniqueColumns, row)
+                if len(nzUniques) == 0 {
+                    return 0, errors.New("cannot upsert with a table that cannot conflict on a unique column")
+                }
         }
         insert, _ := insertColumns.InsertColumnSet(
             {{$alias.DownSingular}}AllColumns,
@@ -28,7 +61,7 @@ func (o {{$alias.UpSingular}}Slice) UpsertAll(ctx context.Context, exec boil.Con
         for _, col := range insert {
             insertCols[col] = struct{}{}
         }
-        if len(insertCols) == len({{$alias.DownSingular}}AllColumns) {
+        if len(insertCols) == len({{$alias.DownSingular}}AllColumns) || (insertColumns.IsWhitelist() && len(insertCols) == len(insertColumns.Cols)) {
             break
         }
     }
