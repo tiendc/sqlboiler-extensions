@@ -4,7 +4,7 @@
 
 ## Why?
 
-[SQLBoiler](https://github.com/volatiletech/sqlboiler) generated models don't come with supports for bulk operations such as bulk insert, upsert, delete and they don't provide any mechanism to overcome the RDBMS limitations such as max number of parameters in a query or statement.
+[SQLBoiler](https://github.com/aarondl/sqlboiler) generated models don't come with supports for bulk operations such as bulk insert, upsert, delete and they don't provide any mechanism to overcome the RDBMS limitations such as max number of parameters in a query or statement.
 
 Additional functionalities:
   - modelSlice.`InsertAll`
@@ -12,8 +12,8 @@ Additional functionalities:
   - modelSlice.`InsertIgnoreAll`
   - modelSlice.`InsertIgnoreAllByPage`: If you need ACID, call this function within a transaction.
   - modelSlice.`UpsertAll`
-  - modelSlice.`UpsertAllOnConflictColumns`: MySQL only. Workaround of [issues/328](https://github.com/volatiletech/sqlboiler/issues/328).
-  - modelSlice.`UpsertOnConflictColumns`: MySQL only. Workaround of [issues/328](https://github.com/volatiletech/sqlboiler/issues/328).
+  - modelSlice.`UpsertAllOnConflictColumns`: MySQL only. Workaround of [issues/328](https://github.com/aarondl/sqlboiler/issues/328).
+  - modelSlice.`UpsertOnConflictColumns`: MySQL only. Workaround of [issues/328](https://github.com/aarondl/sqlboiler/issues/328).
   - modelSlice.`UpsertAllByPage`: If you need ACID, call this function within a transaction.
   - modelSlice.`UpdateAllByPage`: If you need ACID, call this function within a transaction.
   - modelSlice.`DeleteAll`

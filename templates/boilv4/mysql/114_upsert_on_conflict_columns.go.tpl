@@ -4,7 +4,7 @@
 
 // Upsert attempts an insert using an executor, and does an update or ignore on conflict with the specified columns.
 // This is copied from the built-in Upsert() function with accepting an extra param for conflict columns.
-// See bug https://github.com/volatiletech/sqlboiler/issues/328.
+// See bug https://github.com/aarondl/sqlboiler/issues/328.
 // SQLBoiler only checks column conflict on single column only which is not correct as MySQL PK or UNIQUE index
 // can include multiple columns.
 // This function allows passing multiple conflict columns, but it cannot check whether they are correct or not.
