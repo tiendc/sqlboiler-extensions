@@ -13,7 +13,7 @@ func (o {{$alias.UpSingular}}Slice) UpsertAll(ctx context.Context, exec boil.Con
 }
 
 // upsertAllOnConflictColumns upserts multiple rows with passing custom conflict columns to allow bypassing
-// single column conflict check (see bug https://github.com/volatiletech/sqlboiler/issues/328).
+// single column conflict check (see bug https://github.com/aarondl/sqlboiler/issues/328).
 // SQLBoiler only checks column conflict on single column only which is not correct as MySQL PK or UNIQUE index
 // can include multiple columns.
 // This function allows passing multiple conflict columns, but it cannot check whether they are correct or not.
