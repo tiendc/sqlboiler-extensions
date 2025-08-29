@@ -71,6 +71,9 @@ func (o {{$alias.UpSingular}}Slice) upsertAllOnConflictColumns(ctx context.Conte
             insert = append(insert, col)
         }
     }
+    {{- if filterColumnsByAuto true .Table.Columns }}
+    insert = strmangle.SetComplement(insert, {{$alias.DownSingular}}GeneratedColumns)
+    {{- end}}
 
     update := updateColumns.UpdateColumnSet(
         {{$alias.DownSingular}}AllColumns,
@@ -79,6 +82,9 @@ func (o {{$alias.UpSingular}}Slice) upsertAllOnConflictColumns(ctx context.Conte
     if !updateColumns.IsNone() && len(update) == 0 {
         return 0, errors.New("{{.PkgName}}: unable to upsert {{.Table.Name}}, could not build update column list")
     }
+    {{- if filterColumnsByAuto true .Table.Columns }}
+    update = strmangle.SetComplement(update, {{$alias.DownSingular}}GeneratedColumns)
+    {{- end}}
 
     buf := strmangle.GetBuffer()
     defer strmangle.PutBuffer(buf)
