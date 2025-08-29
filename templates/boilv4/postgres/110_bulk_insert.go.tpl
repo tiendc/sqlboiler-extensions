@@ -33,6 +33,9 @@ func (o {{$alias.UpSingular}}Slice) InsertAll({{if .NoContext}}exec boil.Executo
             wl = append(wl, col)
         }
     }
+    {{- if filterColumnsByAuto true .Table.Columns }}
+    wl = strmangle.SetComplement(wl, {{$alias.DownSingular}}GeneratedColumns)
+    {{- end}}
 
     var sql string
     vals := []interface{}{}
